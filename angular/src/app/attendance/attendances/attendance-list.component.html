@@ -59,7 +59,7 @@
     <div class="d-flex justify-content-center mt-3">
       <ngb-pagination
         [collectionSize]="totalCount"
-        [(page)]="pageQuery.skipCount"
+        [(page)]="currentPage"
         [pageSize]="pageQuery.maxResultCount"
         (pageChange)="onPageChange($event)"
       ></ngb-pagination>

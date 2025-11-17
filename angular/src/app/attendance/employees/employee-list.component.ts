@@ -23,6 +23,7 @@ export class EmployeeListComponent implements OnInit {
   loading = false;
   isModalOpen = false;
   selectedEmployee: EmployeeDto | null = null;
+  currentPage = 1;
 
   employeeForm: FormGroup;
 

@@ -21,6 +21,7 @@ export class LocationListComponent implements OnInit {
   loading = false;
   isModalOpen = false;
   selectedLocation: LocationDto | null = null;
+  currentPage = 1;
 
   locationForm: FormGroup;
 

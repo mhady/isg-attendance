@@ -14,48 +14,57 @@
   </div>
 
   <div class="card-body">
-    <ngb-table [value]="employees" [loading]="loading">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>{{ '::EmployeeCode' | abpLocalization }}</th>
-          <th>{{ '::FullName' | abpLocalization }}</th>
-          <th>{{ '::Email' | abpLocalization }}</th>
-          <th>{{ '::PhoneNumber' | abpLocalization }}</th>
-          <th>{{ '::Location' | abpLocalization }}</th>
-          <th>{{ '::Status' | abpLocalization }}</th>
-          <th>{{ '::Actions' | abpLocalization }}</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-employee>
-        <tr>
-          <td>{{ employee.employeeCode }}</td>
-          <td>{{ employee.fullName }}</td>
-          <td>{{ employee.email }}</td>
-          <td>{{ employee.phoneNumber }}</td>
-          <td>{{ employee.locationName }}</td>
-          <td>
-            <span class="badge" [class.bg-success]="employee.isActive" [class.bg-danger]="!employee.isActive">
-              {{ employee.isActive ? ('::Active' | abpLocalization) : ('::Inactive' | abpLocalization) }}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-primary me-1" (click)="editEmployee(employee)">
-              <i class="fa fa-edit"></i>
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteEmployee(employee.id)">
-              <i class="fa fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-    </ngb-table>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{{ '::EmployeeCode' | abpLocalization }}</th>
+            <th>{{ '::FullName' | abpLocalization }}</th>
+            <th>{{ '::Email' | abpLocalization }}</th>
+            <th>{{ '::PhoneNumber' | abpLocalization }}</th>
+            <th>{{ '::Location' | abpLocalization }}</th>
+            <th>{{ '::Status' | abpLocalization }}</th>
+            <th>{{ '::Actions' | abpLocalization }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of employees">
+            <td>{{ employee.employeeCode }}</td>
+            <td>{{ employee.fullName }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.phoneNumber }}</td>
+            <td>{{ employee.locationName }}</td>
+            <td>
+              <span class="badge" [class.bg-success]="employee.isActive" [class.bg-danger]="!employee.isActive">
+                {{ employee.isActive ? ('::Active' | abpLocalization) : ('::Inactive' | abpLocalization) }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" (click)="editEmployee(employee)">
+                <i class="fa fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteEmployee(employee.id)">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="employees.length === 0">
+            <td colspan="7" class="text-center">
+              {{ loading ? '::Loading' : '::NoRecordsFound' | abpLocalization }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <abp-pagination
-      [value]="totalCount"
-      [(ngModel)]="pageQuery.skipCount"
-      [rows]="pageQuery.maxResultCount"
-      (pageChange)="onPageChange($event)"
-    ></abp-pagination>
+    <div class="d-flex justify-content-center mt-3" *ngIf="totalCount > 0">
+      <ngb-pagination
+        [collectionSize]="totalCount"
+        [(page)]="currentPage"
+        [pageSize]="pageQuery.maxResultCount"
+        (pageChange)="onPageChange($event)"
+      ></ngb-pagination>
+    </div>
   </div>
 </div>
 

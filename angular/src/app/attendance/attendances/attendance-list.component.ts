@@ -17,6 +17,7 @@ export class AttendanceListComponent implements OnInit {
   totalCount = 0;
   loading = false;
   selectedDate: Date = new Date();
+  currentPage = 1;
 
   pageQuery: PagedAndSortedResultRequestDto = {
     skipCount: 0,

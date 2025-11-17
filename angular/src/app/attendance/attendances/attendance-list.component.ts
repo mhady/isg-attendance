@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AttendanceService } from '../../proxy/attendance/attendance.service';
 import { AttendanceDto } from '../../proxy/attendance/models';
 import { PagedAndSortedResultRequestDto } from '@abp/ng.core';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-attendance-list',
   templateUrl: './attendance-list.component.html',
+  standalone: true,
+  imports: [CommonModule, NgbModule, SharedModule],
 })
 export class AttendanceListComponent implements OnInit {
   attendances: AttendanceDto[] = [];

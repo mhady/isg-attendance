@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ReportsService } from '../../proxy/attendance/reports.service';
 import { MonthlyAttendanceReportDto, GetMonthlyAttendanceInput } from '../../proxy/attendance/models';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-monthly-report',
   templateUrl: './monthly-report.component.html',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, SharedModule],
 })
 export class MonthlyReportComponent {
   reportForm: FormGroup;

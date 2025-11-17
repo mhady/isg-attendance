@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { SettingsService } from '../../proxy/attendance/settings.service';
 import { CreateUpdateCompanySettingsDto } from '../../proxy/attendance/models';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToasterService } from '@abp/ng.theme.shared';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-company-settings',
   templateUrl: './company-settings.component.html',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, SharedModule],
 })
 export class CompanySettingsComponent implements OnInit {
   settingsForm: FormGroup;

@@ -7,15 +7,13 @@ import { LocationsRoutingModule } from './locations-routing.module';
 import { LocationListComponent } from './location-list.component';
 
 @NgModule({
-  declarations: [
-    LocationListComponent,
-  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     NgbModule,
     SharedModule,
     LocationsRoutingModule,
+    LocationListComponent,
   ],
 })
 export class LocationsModule {}

@@ -7,15 +7,13 @@ import { SettingsRoutingModule } from './settings-routing.module';
 import { CompanySettingsComponent } from './company-settings.component';
 
 @NgModule({
-  declarations: [
-    CompanySettingsComponent,
-  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     NgbModule,
     SharedModule,
     SettingsRoutingModule,
+    CompanySettingsComponent,
   ],
 })
 export class SettingsModule {}

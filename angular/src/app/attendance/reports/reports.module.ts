@@ -8,16 +8,14 @@ import { LocationSummaryComponent } from './location-summary.component';
 import { MonthlyReportComponent } from './monthly-report.component';
 
 @NgModule({
-  declarations: [
-    LocationSummaryComponent,
-    MonthlyReportComponent,
-  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     NgbModule,
     SharedModule,
     ReportsRoutingModule,
+    LocationSummaryComponent,
+    MonthlyReportComponent,
   ],
 })
 export class ReportsModule {}

@@ -1,14 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EmployeeService } from '../../proxy/attendance/employee.service';
 import { LocationService } from '../../proxy/attendance/location.service';
 import { EmployeeDto, LocationDto, CreateEmployeeDto, UpdateEmployeeDto } from '../../proxy/attendance/models';
 import { PagedAndSortedResultRequestDto } from '@abp/ng.core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
+import { SharedModule } from '../../shared/shared.module';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, NgbModule, SharedModule],
 })
 export class EmployeeListComponent implements OnInit {
   employees: EmployeeDto[] = [];

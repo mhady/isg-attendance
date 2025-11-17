@@ -7,15 +7,13 @@ import { AttendancesRoutingModule } from './attendances-routing.module';
 import { AttendanceListComponent } from './attendance-list.component';
 
 @NgModule({
-  declarations: [
-    AttendanceListComponent,
-  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     NgbModule,
     SharedModule,
     AttendancesRoutingModule,
+    AttendanceListComponent,
   ],
 })
 export class AttendancesModule {}

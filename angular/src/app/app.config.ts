@@ -19,22 +19,30 @@ import { AccountLayoutModule } from '@abp/ng.theme.lepton-x/account';
 import { ThemeSharedModule, withHttpErrorConfig, withValidationBluePrint, provideAbpThemeShared } from '@abp/ng.theme.shared';
 export const appConfig: ApplicationConfig = {
     providers: [
-    provideRouter(appRoutes),
-    APP_ROUTE_PROVIDER,
-    provideAbpCore(withOptions({
-        environment,
-        registerLocaleFn: registerLocale(),
-    })),
-    provideSideMenuLayout(),
-    provideAbpOAuth(),
-    provideSettingManagementConfig(),
-    provideAccountConfig(),
-    provideIdentityConfig(),
-    provideTenantManagementConfig(),
-    provideFeatureManagementConfig(),
-    provideAnimations(),
-    provideLogo(withEnvironmentOptions(environment)), importProvidersFrom(ThemeLeptonXModule.forRoot(), SideMenuLayoutModule.forRoot(), AccountLayoutModule.forRoot(), ThemeSharedModule), provideAbpThemeShared(withValidationBluePrint({
-        wrongPassword: 'Please choose 1q2w3E*'
-    }))
-],
+        provideRouter(appRoutes),
+        APP_ROUTE_PROVIDER,
+        provideAbpCore(withOptions({
+            environment,
+            registerLocaleFn: registerLocale(),
+        })),
+        provideAbpOAuth(),
+        provideSettingManagementConfig(),
+        provideAccountConfig(),
+        provideIdentityConfig(),
+        provideTenantManagementConfig(),
+        provideFeatureManagementConfig(),
+        provideAnimations(),
+        provideLogo(withEnvironmentOptions(environment)),
+        importProvidersFrom(
+            ThemeLeptonXModule.forRoot(),
+            SideMenuLayoutModule.forRoot(),
+            AccountLayoutModule.forRoot(),
+            ThemeSharedModule
+        ),
+        provideAbpThemeShared(
+            withValidationBluePrint({
+                wrongPassword: 'Please choose 1q2w3E*'
+            })
+        )
+    ],
 };

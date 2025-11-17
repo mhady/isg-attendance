@@ -40,7 +40,6 @@ namespace ISG.attendance.Services
         protected override async Task<IQueryable<Location>> CreateFilteredQueryAsync(PagedAndSortedResultRequestDto input)
         {
             return (await base.CreateFilteredQueryAsync(input))
-                .Include(x => x.CreationTime)
                 .OrderByDescending(x => x.CreationTime);
         }
 
@@ -61,11 +60,13 @@ namespace ISG.attendance.Services
 
             // Get employee counts for all locations
             var locationIds = entities.Select(e => e.Id).ToList();
-            var employeeCounts = await _employeeRepository
-                .Where(e => locationIds.Contains(e.LocationId.Value) && e.IsActive)
-                .GroupBy(e => e.LocationId)
-                .Select(g => new { LocationId = g.Key, Count = g.Count() })
-                .ToListAsync();
+            var queryable = await _employeeRepository.GetQueryableAsync();
+            var employeeCounts = await AsyncExecuter.ToListAsync(
+                queryable
+                    .Where(e => locationIds.Contains(e.LocationId.Value) && e.IsActive)
+                    .GroupBy(e => e.LocationId)
+                    .Select(g => new { LocationId = g.Key, Count = g.Count() })
+            );
 
             foreach (var dto in dtos)
             {

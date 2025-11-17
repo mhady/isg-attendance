@@ -11,7 +11,6 @@ namespace ISG.attendance.Controllers
 {
     [RemoteService(Name = "attendance")]
     [Area("attendance")]
-    [ControllerName("Location")]
     [Route("api/attendance/locations")]
     public class LocationController : AbpController
     {

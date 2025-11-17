@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ISG.attendance.DTOs.Reports;
 using ISG.attendance.Entities;
 using ISG.attendance.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;

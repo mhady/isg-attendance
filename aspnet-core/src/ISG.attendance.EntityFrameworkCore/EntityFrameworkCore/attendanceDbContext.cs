@@ -12,6 +12,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using ISG.attendance.Entities;
 
 namespace ISG.attendance.EntityFrameworkCore;
 
@@ -24,6 +25,12 @@ public class attendanceDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
+
+    // Custom Entities
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<Location> Locations { get; set; }
+    public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<CompanySettings> CompanySettings { get; set; }
 
     #region Entities from the modules
 
@@ -76,11 +83,59 @@ public class attendanceDbContext :
 
         /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(attendanceConsts.DbTablePrefix + "YourEntities", attendanceConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.Entity<Location>(b =>
+        {
+            b.ToTable(attendanceConsts.DbTablePrefix + "Locations", attendanceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name).IsRequired().HasMaxLength(256);
+            b.Property(x => x.Description).HasMaxLength(1024);
+
+            b.HasIndex(x => new { x.TenantId, x.Name });
+        });
+
+        builder.Entity<Employee>(b =>
+        {
+            b.ToTable(attendanceConsts.DbTablePrefix + "Employees", attendanceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.FullName).IsRequired().HasMaxLength(256);
+            b.Property(x => x.Email).IsRequired().HasMaxLength(256);
+            b.Property(x => x.PhoneNumber).HasMaxLength(50);
+            b.Property(x => x.EmployeeCode).HasMaxLength(50);
+
+            b.HasOne(x => x.Location)
+                .WithMany()
+                .HasForeignKey(x => x.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasIndex(x => new { x.TenantId, x.UserId });
+            b.HasIndex(x => new { x.TenantId, x.EmployeeCode });
+        });
+
+        builder.Entity<Attendance>(b =>
+        {
+            b.ToTable(attendanceConsts.DbTablePrefix + "Attendances", attendanceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Notes).HasMaxLength(1024);
+
+            b.HasOne(x => x.Employee)
+                .WithMany()
+                .HasForeignKey(x => x.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasIndex(x => new { x.TenantId, x.EmployeeId, x.Date });
+        });
+
+        builder.Entity<CompanySettings>(b =>
+        {
+            b.ToTable(attendanceConsts.DbTablePrefix + "CompanySettings", attendanceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.TimeZone).HasMaxLength(100);
+
+            b.HasIndex(x => x.TenantId).IsUnique();
+        });
     }
 }

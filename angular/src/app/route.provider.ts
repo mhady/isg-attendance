@@ -15,6 +15,55 @@ function configureRoutes(routesService: RoutesService) {
         order: 1,
         layout: eLayoutType.application,
       },
+      {
+        path: '/attendance',
+        name: '::Menu:Attendance',
+        iconClass: 'fas fa-clock',
+        order: 2,
+        layout: eLayoutType.application,
+      },
+      {
+        path: '/attendance/employees',
+        name: '::Menu:Employees',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Employees',
+      },
+      {
+        path: '/attendance/locations',
+        name: '::Menu:Locations',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Locations',
+      },
+      {
+        path: '/attendance/attendances',
+        name: '::Menu:Attendances',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Attendances.View',
+      },
+      {
+        path: '/attendance/settings',
+        name: '::Menu:Settings',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Settings',
+      },
+      {
+        path: '/attendance/reports/location-summary',
+        name: '::Menu:LocationSummary',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Reports.LocationSummary',
+      },
+      {
+        path: '/attendance/reports/monthly-attendance',
+        name: '::Menu:MonthlyReport',
+        parentName: '::Menu:Attendance',
+        layout: eLayoutType.application,
+        requiredPolicy: 'attendance.Reports.MonthlyAttendance',
+      },
     ]);
   };
 }

@@ -1,0 +1,120 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <h3>{{ '::Menu:Employees' | abpLocalization }}</h3>
+      </div>
+      <div class="col text-end">
+        <button class="btn btn-primary" (click)="createEmployee()">
+          <i class="fa fa-plus me-1"></i>
+          {{ '::NewEmployee' | abpLocalization }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <ngb-table [value]="employees" [loading]="loading">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ '::EmployeeCode' | abpLocalization }}</th>
+          <th>{{ '::FullName' | abpLocalization }}</th>
+          <th>{{ '::Email' | abpLocalization }}</th>
+          <th>{{ '::PhoneNumber' | abpLocalization }}</th>
+          <th>{{ '::Location' | abpLocalization }}</th>
+          <th>{{ '::Status' | abpLocalization }}</th>
+          <th>{{ '::Actions' | abpLocalization }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-employee>
+        <tr>
+          <td>{{ employee.employeeCode }}</td>
+          <td>{{ employee.fullName }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.phoneNumber }}</td>
+          <td>{{ employee.locationName }}</td>
+          <td>
+            <span class="badge" [class.bg-success]="employee.isActive" [class.bg-danger]="!employee.isActive">
+              {{ employee.isActive ? ('::Active' | abpLocalization) : ('::Inactive' | abpLocalization) }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary me-1" (click)="editEmployee(employee)">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteEmployee(employee.id)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-template>
+    </ngb-table>
+
+    <abp-pagination
+      [value]="totalCount"
+      [(ngModel)]="pageQuery.skipCount"
+      [rows]="pageQuery.maxResultCount"
+      (pageChange)="onPageChange($event)"
+    ></abp-pagination>
+  </div>
+</div>
+
+<abp-modal [(visible)]="isModalOpen" [busy]="loading">
+  <ng-template #abpHeader>
+    <h3>{{ (selectedEmployee ? '::Edit' : '::NewEmployee') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form [formGroup]="employeeForm" (ngSubmit)="save()">
+      <div class="mb-3">
+        <label for="fullName" class="form-label">{{ '::FullName' | abpLocalization }} *</label>
+        <input type="text" id="fullName" class="form-control" formControlName="fullName" />
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">{{ '::Email' | abpLocalization }} *</label>
+        <input type="email" id="email" class="form-control" formControlName="email" />
+      </div>
+
+      <div class="mb-3" *ngIf="!selectedEmployee">
+        <label for="password" class="form-label">{{ '::Password' | abpLocalization }} *</label>
+        <input type="password" id="password" class="form-control" formControlName="password" />
+      </div>
+
+      <div class="mb-3">
+        <label for="employeeCode" class="form-label">{{ '::EmployeeCode' | abpLocalization }}</label>
+        <input type="text" id="employeeCode" class="form-control" formControlName="employeeCode" />
+      </div>
+
+      <div class="mb-3">
+        <label for="phoneNumber" class="form-label">{{ '::PhoneNumber' | abpLocalization }}</label>
+        <input type="text" id="phoneNumber" class="form-control" formControlName="phoneNumber" />
+      </div>
+
+      <div class="mb-3">
+        <label for="locationId" class="form-label">{{ '::Location' | abpLocalization }}</label>
+        <select id="locationId" class="form-control" formControlName="locationId">
+          <option [ngValue]="null">{{ '::SelectLocation' | abpLocalization }}</option>
+          <option *ngFor="let location of locations" [ngValue]="location.id">
+            {{ location.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" id="isActive" class="form-check-input" formControlName="isActive" />
+        <label for="isActive" class="form-check-label">{{ '::IsActive' | abpLocalization }}</label>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="employeeForm.invalid">
+      <i class="fa fa-check me-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

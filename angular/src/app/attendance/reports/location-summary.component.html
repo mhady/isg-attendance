@@ -1,0 +1,49 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <h3>{{ '::LocationSummaryReport' | abpLocalization }}</h3>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" (click)="loadSummary()">
+          <i class="fa fa-refresh me-1"></i>
+          {{ '::Refresh' | abpLocalization }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{{ '::LocationName' | abpLocalization }}</th>
+            <th>{{ '::TotalEmployees' | abpLocalization }}</th>
+            <th>{{ '::ActiveEmployees' | abpLocalization }}</th>
+            <th>{{ '::PresentToday' | abpLocalization }}</th>
+            <th>{{ '::AttendanceRate' | abpLocalization }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of summary">
+            <td>{{ item.locationName }}</td>
+            <td>{{ item.totalEmployees }}</td>
+            <td>{{ item.activeEmployees }}</td>
+            <td>{{ item.presentToday }}</td>
+            <td>
+              <span class="badge bg-info">
+                {{ item.activeEmployees > 0 ? ((item.presentToday / item.activeEmployees) * 100).toFixed(1) : 0 }}%
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="summary.length === 0">
+            <td colspan="5" class="text-center">
+              {{ '::NoRecordsFound' | abpLocalization }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

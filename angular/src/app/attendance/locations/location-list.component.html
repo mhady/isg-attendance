@@ -1,0 +1,95 @@
+<div class="card">
+  <div class="card-header">
+    <div class="row">
+      <div class="col">
+        <h3>{{ '::Menu:Locations' | abpLocalization }}</h3>
+      </div>
+      <div class="col text-end">
+        <button class="btn btn-primary" (click)="createLocation()">
+          <i class="fa fa-plus me-1"></i>
+          {{ '::NewLocation' | abpLocalization }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>{{ '::Name' | abpLocalization }}</th>
+            <th>{{ '::Description' | abpLocalization }}</th>
+            <th>{{ '::EmployeeCount' | abpLocalization }}</th>
+            <th>{{ '::Status' | abpLocalization }}</th>
+            <th>{{ '::Actions' | abpLocalization }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let location of locations">
+            <td>{{ location.name }}</td>
+            <td>{{ location.description }}</td>
+            <td>{{ location.employeeCount }}</td>
+            <td>
+              <span class="badge" [class.bg-success]="location.isActive" [class.bg-danger]="!location.isActive">
+                {{ location.isActive ? ('::Active' | abpLocalization) : ('::Inactive' | abpLocalization) }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" (click)="editLocation(location)">
+                <i class="fa fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deleteLocation(location.id)">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-center mt-3">
+      <ngb-pagination
+        [collectionSize]="totalCount"
+        [(page)]="pageQuery.skipCount"
+        [pageSize]="pageQuery.maxResultCount"
+        (pageChange)="onPageChange($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>
+
+<abp-modal [(visible)]="isModalOpen" [busy]="loading">
+  <ng-template #abpHeader>
+    <h3>{{ (selectedLocation ? '::Edit' : '::NewLocation') | abpLocalization }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <form [formGroup]="locationForm" (ngSubmit)="save()">
+      <div class="mb-3">
+        <label for="name" class="form-label">{{ '::Name' | abpLocalization }} *</label>
+        <input type="text" id="name" class="form-control" formControlName="name" />
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">{{ '::Description' | abpLocalization }}</label>
+        <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" id="isActive" class="form-check-input" formControlName="isActive" />
+        <label for="isActive" class="form-check-label">{{ '::IsActive' | abpLocalization }}</label>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-secondary" (click)="isModalOpen = false">
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="locationForm.invalid">
+      <i class="fa fa-check me-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>

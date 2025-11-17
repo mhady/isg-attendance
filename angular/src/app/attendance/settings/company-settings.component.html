@@ -1,0 +1,120 @@
+<div class="card">
+  <div class="card-header">
+    <h3>{{ '::Menu:Settings' | abpLocalization }}</h3>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="settingsForm" (ngSubmit)="save()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="normalWorkingHours" class="form-label">
+              {{ '::NormalWorkingHours' | abpLocalization }} *
+            </label>
+            <input
+              type="number"
+              id="normalWorkingHours"
+              class="form-control"
+              formControlName="normalWorkingHours"
+              min="1"
+              max="24"
+              step="0.5"
+            />
+            <small class="form-text text-muted">{{ '::HoursPerDay' | abpLocalization }}</small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="timeZone" class="form-label">
+              {{ '::TimeZone' | abpLocalization }} *
+            </label>
+            <input
+              type="text"
+              id="timeZone"
+              class="form-control"
+              formControlName="timeZone"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="workdayStartTime" class="form-label">
+              {{ '::WorkdayStartTime' | abpLocalization }} *
+            </label>
+            <input
+              type="time"
+              id="workdayStartTime"
+              class="form-control"
+              formControlName="workdayStartTime"
+            />
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="workdayEndTime" class="form-label">
+              {{ '::WorkdayEndTime' | abpLocalization }} *
+            </label>
+            <input
+              type="time"
+              id="workdayEndTime"
+              class="form-control"
+              formControlName="workdayEndTime"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="lateCheckInGracePeriod" class="form-label">
+              {{ '::LateCheckInGracePeriod' | abpLocalization }}
+            </label>
+            <input
+              type="number"
+              id="lateCheckInGracePeriod"
+              class="form-control"
+              formControlName="lateCheckInGracePeriodMinutes"
+              min="0"
+              max="120"
+            />
+            <small class="form-text text-muted">{{ '::Minutes' | abpLocalization }}</small>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="earlyCheckOutGracePeriod" class="form-label">
+              {{ '::EarlyCheckOutGracePeriod' | abpLocalization }}
+            </label>
+            <input
+              type="number"
+              id="earlyCheckOutGracePeriod"
+              class="form-control"
+              formControlName="earlyCheckOutGracePeriodMinutes"
+              min="0"
+              max="120"
+            />
+            <small class="form-text text-muted">{{ '::Minutes' | abpLocalization }}</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="settingsForm.invalid || saving"
+        >
+          <i class="fa fa-check me-1"></i>
+          {{ '::Save' | abpLocalization }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

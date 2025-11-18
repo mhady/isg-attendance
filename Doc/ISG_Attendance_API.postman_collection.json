@@ -1,0 +1,888 @@
+{
+  "info": {
+    "_postman_id": "isg-attendance-api-collection",
+    "name": "ISG Attendance API",
+    "description": "Complete API collection for ISG Attendance Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://localhost:44325",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "employeeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "locationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "attendanceId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login (Get Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refresh_token);",
+                  "    pm.test('Login successful', function() {",
+                  "        pm.expect(jsonData.access_token).to.not.be.empty;",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "attendance_App",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "1q2w3E*",
+                  "type": "text"
+                },
+                {
+                  "key": "scope",
+                  "value": "offline_access attendance",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/connect/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["connect", "token"]
+            },
+            "description": "Authenticate and get access token"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('accessToken', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refreshToken', jsonData.refresh_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "attendance_App",
+                  "type": "text"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refreshToken}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/connect/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["connect", "token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Get All Employees",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.items && jsonData.items.length > 0) {",
+                  "    pm.collectionVariables.set('employeeId', jsonData.items[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees?skipCount=0&maxResultCount=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees"],
+              "query": [
+                {
+                  "key": "skipCount",
+                  "value": "0"
+                },
+                {
+                  "key": "maxResultCount",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Employee by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "{{employeeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Employee by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/by-user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "by-user", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Employees by Location",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/by-location/{{locationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "by-location", "{{locationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 201', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.id) {",
+                  "    pm.collectionVariables.set('employeeId', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test Employee\",\n  \"email\": \"test.employee@company.com\",\n  \"password\": \"Test@123456\",\n  \"phoneNumber\": \"+1234567890\",\n  \"employeeCode\": \"EMP-TEST-001\",\n  \"locationId\": null,\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees"]
+            }
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test Employee Updated\",\n  \"email\": \"test.employee.updated@company.com\",\n  \"phoneNumber\": \"+0987654321\",\n  \"employeeCode\": \"EMP-TEST-001-U\",\n  \"locationId\": \"{{locationId}}\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "{{employeeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 204', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/{{employeeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "{{employeeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Import Employees (Bulk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"fullName\": \"Import Employee 1\",\n    \"email\": \"import1@company.com\",\n    \"password\": \"Import@123\",\n    \"phoneNumber\": \"+1111111111\",\n    \"employeeCode\": \"IMP-001\",\n    \"locationName\": \"Main Office\"\n  },\n  {\n    \"fullName\": \"Import Employee 2\",\n    \"email\": \"import2@company.com\",\n    \"password\": \"Import@456\",\n    \"phoneNumber\": \"+2222222222\",\n    \"employeeCode\": \"IMP-002\",\n    \"locationName\": \"Main Office\"\n  }\n]"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/employees/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "employees", "import"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "item": [
+        {
+          "name": "Get All Locations",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.items && jsonData.items.length > 0) {",
+                  "    pm.collectionVariables.set('locationId', jsonData.items[0].id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations?skipCount=0&maxResultCount=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations"],
+              "query": [
+                {
+                  "key": "skipCount",
+                  "value": "0"
+                },
+                {
+                  "key": "maxResultCount",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Locations (No Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations", "all"]
+            }
+          }
+        },
+        {
+          "name": "Get Location by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations/{{locationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations", "{{locationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 201', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.id) {",
+                  "    pm.collectionVariables.set('locationId', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Location\",\n  \"description\": \"This is a test location for API testing\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations"]
+            }
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Location Updated\",\n  \"description\": \"Updated description\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations/{{locationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations", "{{locationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Location",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/locations/{{locationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "locations", "{{locationId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Check In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.id) {",
+                  "    pm.collectionVariables.set('attendanceId', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var now = new Date().toISOString();",
+                  "pm.variables.set('checkInTime', now);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkInTime\": \"{{checkInTime}}\",\n  \"notes\": \"Check-in via Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/check-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "check-in"]
+            }
+          }
+        },
+        {
+          "name": "Check Out",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var now = new Date().toISOString();",
+                  "pm.variables.set('checkOutTime', now);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkOutTime\": \"{{checkOutTime}}\",\n  \"notes\": \"Check-out via Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/check-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "check-out"]
+            }
+          }
+        },
+        {
+          "name": "Get Today's Attendance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "today"]
+            }
+          }
+        },
+        {
+          "name": "Get All Attendance Records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances?skipCount=0&maxResultCount=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances"],
+              "query": [
+                {
+                  "key": "skipCount",
+                  "value": "0"
+                },
+                {
+                  "key": "maxResultCount",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by Employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/by-employee/{{employeeId}}?skipCount=0&maxResultCount=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "by-employee", "{{employeeId}}"],
+              "query": [
+                {
+                  "key": "skipCount",
+                  "value": "0"
+                },
+                {
+                  "key": "maxResultCount",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by Date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/by-date?date=2024-11-18",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "by-date"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-11-18"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/attendances/by-date-range?startDate=2024-11-01&endDate=2024-11-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "attendances", "by-date-range"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-11-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-11-30"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get Company Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Update Company Settings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"normalWorkingHours\": 8.0,\n  \"workdayStartTime\": \"08:00:00\",\n  \"workdayEndTime\": \"17:00:00\",\n  \"lateCheckInGracePeriodMinutes\": 15,\n  \"earlyCheckOutGracePeriodMinutes\": 15,\n  \"timeZone\": \"UTC\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "settings"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Get Location Summary Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/reports/location-summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "reports", "location-summary"]
+            }
+          }
+        },
+        {
+          "name": "Get Monthly Attendance Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": null,\n  \"employeeName\": null,\n  \"month\": 11,\n  \"year\": 2024\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/reports/monthly-attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "reports", "monthly-attendance"]
+            }
+          }
+        },
+        {
+          "name": "Get Monthly Report for Specific Employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"employeeName\": null,\n  \"month\": 11,\n  \"year\": 2024\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/attendance/reports/monthly-attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "attendance", "reports", "monthly-attendance"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ import { provideAccountConfig } from '@abp/ng.account/config';
 import { provideIdentityConfig } from '@abp/ng.identity/config';
 import { provideTenantManagementConfig } from '@abp/ng.tenant-management/config';
 import { provideFeatureManagementConfig } from '@abp/ng.feature-management';
-import { provideLogo, withEnvironmentOptions } from '@volo/ngx-lepton-x.core';
+// import { provideLogo, withEnvironmentOptions } from '@volo/ngx-lepton-x.core'; // Not available in ABP 8.3.0
 import { ThemeLeptonXModule } from '@abp/ng.theme.lepton-x';
 import { SideMenuLayoutModule } from '@abp/ng.theme.lepton-x/layouts';
 import { AccountLayoutModule } from '@abp/ng.theme.lepton-x/account';
@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
         provideTenantManagementConfig(),
         provideFeatureManagementConfig(),
         provideAnimations(),
-        provideLogo(withEnvironmentOptions(environment)),
+        // provideLogo(withEnvironmentOptions(environment)), // Not available in ABP 8.3.0
         importProvidersFrom(
             ThemeLeptonXModule.forRoot(),
             SideMenuLayoutModule.forRoot(),

@@ -4,25 +4,25 @@ export const appRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadChildren: () => import('./home/home.routes').then(m => m.homeRoutes),
+    loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
   },
   {
     path: 'account',
-    loadChildren: () => import('@abp/ng.account').then(m => m.createRoutes()),
+    loadChildren: () => import('@abp/ng.account').then(m => m.AccountModule),
   },
   {
     path: 'identity',
-    loadChildren: () => import('@abp/ng.identity').then(m => m.createRoutes()),
+    loadChildren: () => import('@abp/ng.identity').then(m => m.IdentityModule),
   },
   {
     path: 'tenant-management',
     loadChildren: () =>
-      import('@abp/ng.tenant-management').then(m => m.createRoutes()),
+      import('@abp/ng.tenant-management').then(m => m.TenantManagementModule),
   },
   {
     path: 'setting-management',
     loadChildren: () =>
-      import('@abp/ng.setting-management').then(m => m.createRoutes()),
+      import('@abp/ng.setting-management').then(m => m.SettingManagementModule),
   },
   {
     path: 'attendance/employees',

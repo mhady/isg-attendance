@@ -13,7 +13,7 @@ import { IdentityConfigModule } from '@abp/ng.identity/config';
 import { TenantManagementConfigModule } from '@abp/ng.tenant-management/config';
 import { SettingManagementConfigModule } from '@abp/ng.setting-management/config';
 import { FeatureManagementModule } from '@abp/ng.feature-management';
-import { OAuthModule } from '@abp/ng.oauth';
+import { AbpOAuthModule } from '@abp/ng.oauth';
 
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
@@ -33,7 +33,7 @@ import { registerLocale } from '@abp/ng.core/locale';
       environment,
       registerLocaleFn: registerLocale(),
     }),
-    OAuthModule.forRoot(),
+    AbpOAuthModule.forRoot(),
     ThemeSharedModule.forRoot({
       httpErrorConfig: {
         errorScreen: {

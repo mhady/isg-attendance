@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using ISG.attendance.Permissions;
 using Microsoft.Extensions.Logging;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Data;
@@ -81,33 +80,34 @@ public class attendanceDataSeedContributor : IDataSeedContributor, ITransientDep
     private async Task AssignPermissionsAsync()
     {
         // Assign permissions to Company Admin role
+        // Note: Using string literals to avoid circular dependency with Application.Contracts
         var companyAdminPermissions = new[]
         {
             // Employee Management - Full Access
-            attendancePermissions.Employees.Default,
-            attendancePermissions.Employees.Create,
-            attendancePermissions.Employees.Edit,
-            attendancePermissions.Employees.Delete,
-            attendancePermissions.Employees.Import,
+            "attendance.Employees",
+            "attendance.Employees.Create",
+            "attendance.Employees.Edit",
+            "attendance.Employees.Delete",
+            "attendance.Employees.Import",
 
             // Location Management - Full Access
-            attendancePermissions.Locations.Default,
-            attendancePermissions.Locations.Create,
-            attendancePermissions.Locations.Edit,
-            attendancePermissions.Locations.Delete,
+            "attendance.Locations",
+            "attendance.Locations.Create",
+            "attendance.Locations.Edit",
+            "attendance.Locations.Delete",
 
             // Attendance - View All
-            attendancePermissions.Attendances.Default,
-            attendancePermissions.Attendances.View,
+            "attendance.Attendances",
+            "attendance.Attendances.View",
 
             // Settings - Full Access
-            attendancePermissions.Settings.Default,
-            attendancePermissions.Settings.Manage,
+            "attendance.Settings",
+            "attendance.Settings.Manage",
 
             // Reports - Full Access
-            attendancePermissions.Reports.Default,
-            attendancePermissions.Reports.LocationSummary,
-            attendancePermissions.Reports.MonthlyAttendance
+            "attendance.Reports",
+            "attendance.Reports.LocationSummary",
+            "attendance.Reports.MonthlyAttendance"
         };
 
         foreach (var permission in companyAdminPermissions)
@@ -124,10 +124,10 @@ public class attendanceDataSeedContributor : IDataSeedContributor, ITransientDep
         var employeePermissions = new[]
         {
             // Attendance - Only CheckIn/CheckOut and ViewOwn
-            attendancePermissions.Attendances.Default,
-            attendancePermissions.Attendances.CheckIn,
-            attendancePermissions.Attendances.CheckOut,
-            attendancePermissions.Attendances.ViewOwn
+            "attendance.Attendances",
+            "attendance.Attendances.CheckIn",
+            "attendance.Attendances.CheckOut",
+            "attendance.Attendances.ViewOwn"
         };
 
         foreach (var permission in employeePermissions)

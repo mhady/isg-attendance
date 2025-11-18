@@ -193,7 +193,7 @@ public class attendanceHttpApiHostModule : AbpModule
         }
 
         app.UseCorrelationId();
-        app.MapAbpStaticAssets();
+        app.UseStaticFiles();
         app.UseRouting();
         app.UseCors();
         app.UseAuthentication();

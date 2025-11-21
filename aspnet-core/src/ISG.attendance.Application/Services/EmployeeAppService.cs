@@ -92,7 +92,7 @@ namespace ISG.attendance.Services
                 CurrentTenant.Id
             );
 
-            await _userManager.SetEmailAsync(user, input.Email);
+            // Email is already set in constructor, no need to call SetEmailAsync before creation
             var result = await _userManager.CreateAsync(user, input.Password);
 
             if (!result.Succeeded)

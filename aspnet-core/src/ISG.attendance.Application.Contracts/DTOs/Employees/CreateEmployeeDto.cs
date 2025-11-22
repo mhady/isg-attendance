@@ -9,7 +9,6 @@ namespace ISG.attendance.DTOs.Employees
         [StringLength(256)]
         public string FullName { get; set; }
 
-        [Required]
         [EmailAddress]
         [StringLength(256)]
         public string Email { get; set; }

@@ -97,15 +97,18 @@
         <input type="text" id="fullName" class="form-control" formControlName="fullName" />
       </div>
 
-      <div class="mb-3">
-        <label for="email" class="form-label">{{ '::Email' | abpLocalization }} *</label>
-        <input type="email" id="email" class="form-control" formControlName="email" />
-      </div>
-
       <div class="mb-3 form-check" *ngIf="!selectedEmployee">
         <input type="checkbox" id="createUserAccount" class="form-check-input" [(ngModel)]="createUserAccount" [ngModelOptions]="{standalone: true}" (change)="onCreateUserAccountChange()" />
         <label for="createUserAccount" class="form-check-label">{{ '::CreateUserAccount' | abpLocalization }}</label>
         <small class="form-text text-muted d-block">{{ '::CreateUserAccountHint' | abpLocalization }}</small>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">
+          {{ '::Email' | abpLocalization }}
+          <span *ngIf="!selectedEmployee && createUserAccount" class="text-danger">*</span>
+        </label>
+        <input type="email" id="email" class="form-control" formControlName="email" />
       </div>
 
       <div class="mb-3" *ngIf="!selectedEmployee && createUserAccount">

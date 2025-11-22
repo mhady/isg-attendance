@@ -109,6 +109,11 @@ namespace ISG.attendance.Services
             // Create Identity User only if CreateUserAccount is true
             if (input.CreateUserAccount)
             {
+                if (string.IsNullOrWhiteSpace(input.Email))
+                {
+                    throw new UserFriendlyException("Email is required when creating a user account");
+                }
+
                 if (string.IsNullOrWhiteSpace(input.Password))
                 {
                     throw new UserFriendlyException("Password is required when creating a user account");

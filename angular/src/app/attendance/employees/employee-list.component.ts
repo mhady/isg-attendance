@@ -45,7 +45,7 @@ export class EmployeeListComponent implements OnInit {
   ) {
     this.employeeForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(256)]],
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(256)]],
+      email: ['', [Validators.email, Validators.maxLength(256)]],
       password: ['', [Validators.maxLength(256)]],
       phoneNumber: ['', [Validators.maxLength(50)]],
       employeeCode: ['', [Validators.maxLength(50)]],
@@ -90,18 +90,27 @@ export class EmployeeListComponent implements OnInit {
     this.selectedEmployee = null;
     this.createUserAccount = false;
     this.employeeForm.reset({ isActive: true });
+    // Clear validators for email and password when not creating user account
+    this.employeeForm.get('email')?.setValidators([Validators.email, Validators.maxLength(256)]);
     this.employeeForm.get('password')?.clearValidators();
+    this.employeeForm.get('password')?.setValue(null);
+    this.employeeForm.get('email')?.updateValueAndValidity();
     this.employeeForm.get('password')?.updateValueAndValidity();
     this.isModalOpen = true;
   }
 
   onCreateUserAccountChange() {
     if (this.createUserAccount) {
+      // When creating user account, make email and password required
+      this.employeeForm.get('email')?.setValidators([Validators.required, Validators.email, Validators.maxLength(256)]);
       this.employeeForm.get('password')?.setValidators([Validators.required, Validators.maxLength(256)]);
     } else {
+      // When not creating user account, make email and password optional
+      this.employeeForm.get('email')?.setValidators([Validators.email, Validators.maxLength(256)]);
       this.employeeForm.get('password')?.clearValidators();
       this.employeeForm.get('password')?.setValue(null);
     }
+    this.employeeForm.get('email')?.updateValueAndValidity();
     this.employeeForm.get('password')?.updateValueAndValidity();
   }
 

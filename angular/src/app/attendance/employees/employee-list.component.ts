@@ -131,6 +131,10 @@ export class EmployeeListComponent implements OnInit {
 
   save() {
     if (this.employeeForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.employeeForm.controls).forEach(key => {
+        this.employeeForm.get(key)?.markAsTouched();
+      });
       return;
     }
 

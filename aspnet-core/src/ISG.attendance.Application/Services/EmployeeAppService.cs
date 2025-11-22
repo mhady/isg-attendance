@@ -107,18 +107,9 @@ namespace ISG.attendance.Services
             Guid? userId = null;
 
             // Create Identity User only if CreateUserAccount is true
+            // Note: Validation for email/password is handled by IValidatableObject in CreateEmployeeDto
             if (input.CreateUserAccount)
             {
-                if (string.IsNullOrWhiteSpace(input.Email))
-                {
-                    throw new UserFriendlyException("Email is required when creating a user account");
-                }
-
-                if (string.IsNullOrWhiteSpace(input.Password))
-                {
-                    throw new UserFriendlyException("Password is required when creating a user account");
-                }
-
                 var user = new IdentityUser(
                     GuidGenerator.Create(),
                     input.Email,

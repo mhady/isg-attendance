@@ -216,4 +216,9 @@ export class EmployeeListComponent implements OnInit {
       .filter(name => name)
       .join(', ');
   }
+
+  getLocationName(locationId: string): string {
+    const location = this.locations.find(l => l.id === locationId);
+    return location?.name || '';
+  }
 }

@@ -27,7 +27,7 @@ export class EmployeeListComponent implements OnInit {
   selectedEmployeeLocations: EmployeeLocationDto[] = [];
   selectedLocationIds: string[] = [];
   currentPage = 1;
-  createUserAccount = true;
+  createUserAccount = false;
 
   employeeForm: FormGroup;
 
@@ -88,7 +88,7 @@ export class EmployeeListComponent implements OnInit {
 
   createEmployee() {
     this.selectedEmployee = null;
-    this.createUserAccount = true;
+    this.createUserAccount = false;
     this.employeeForm.reset({ isActive: true });
     this.employeeForm.get('password')?.clearValidators();
     this.employeeForm.get('password')?.updateValueAndValidity();

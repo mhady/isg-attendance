@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -12,9 +13,9 @@ namespace ISG.attendance.Entities
         public Guid? TenantId { get; set; }
 
         /// <summary>
-        /// Reference to Identity User
+        /// Reference to Identity User (optional)
         /// </summary>
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         /// <summary>
         /// Employee full name
@@ -51,16 +52,21 @@ namespace ISG.attendance.Entities
         /// </summary>
         public bool IsActive { get; set; }
 
+        /// <summary>
+        /// Navigation property for employee locations (many-to-many)
+        /// </summary>
+        public virtual ICollection<EmployeeLocation> EmployeeLocations { get; set; }
+
         protected Employee()
         {
         }
 
         public Employee(
             Guid id,
-            Guid userId,
             string fullName,
             string email,
             string employeeCode,
+            Guid? userId = null,
             Guid? locationId = null,
             string phoneNumber = null,
             Guid? tenantId = null)

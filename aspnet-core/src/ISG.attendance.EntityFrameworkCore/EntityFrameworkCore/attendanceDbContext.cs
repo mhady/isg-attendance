@@ -30,6 +30,7 @@ public class attendanceDbContext :
     // Custom Entities
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<EmployeeLocation> EmployeeLocations { get; set; }
     public DbSet<Attendance> Attendances { get; set; }
     public DbSet<CompanySettings> CompanySettings { get; set; }
 
@@ -110,8 +111,31 @@ public class attendanceDbContext :
                 .HasForeignKey(x => x.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            b.HasMany(x => x.EmployeeLocations)
+                .WithOne(x => x.Employee)
+                .HasForeignKey(x => x.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             b.HasIndex(x => new { x.TenantId, x.UserId });
             b.HasIndex(x => new { x.TenantId, x.EmployeeCode });
+        });
+
+        builder.Entity<EmployeeLocation>(b =>
+        {
+            b.ToTable(attendanceConsts.DbTablePrefix + "EmployeeLocations", attendanceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Employee)
+                .WithMany(x => x.EmployeeLocations)
+                .HasForeignKey(x => x.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(x => x.Location)
+                .WithMany()
+                .HasForeignKey(x => x.LocationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasIndex(x => new { x.TenantId, x.EmployeeId, x.LocationId }).IsUnique();
         });
 
         builder.Entity<Attendance>(b =>

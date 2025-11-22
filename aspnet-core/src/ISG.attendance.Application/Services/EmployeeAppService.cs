@@ -106,9 +106,14 @@ namespace ISG.attendance.Services
 
             Guid? userId = null;
 
-            // Create Identity User only if password is provided
-            if (!string.IsNullOrWhiteSpace(input.Password))
+            // Create Identity User only if CreateUserAccount is true
+            if (input.CreateUserAccount)
             {
+                if (string.IsNullOrWhiteSpace(input.Password))
+                {
+                    throw new UserFriendlyException("Password is required when creating a user account");
+                }
+
                 var user = new IdentityUser(
                     GuidGenerator.Create(),
                     input.Email,

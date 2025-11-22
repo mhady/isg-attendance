@@ -142,7 +142,16 @@ export class EmployeeListComponent implements OnInit {
       });
     } else {
       // Create
-      const createDto: CreateEmployeeDto = this.employeeForm.value;
+      const createDto: CreateEmployeeDto = {
+        fullName: this.employeeForm.value.fullName,
+        email: this.employeeForm.value.email,
+        createUserAccount: this.createUserAccount,
+        password: this.employeeForm.value.password,
+        phoneNumber: this.employeeForm.value.phoneNumber,
+        employeeCode: this.employeeForm.value.employeeCode,
+        locationId: this.employeeForm.value.locationId,
+        isActive: this.employeeForm.value.isActive
+      };
 
       this.employeeService.create(createDto).subscribe(() => {
         this.isModalOpen = false;

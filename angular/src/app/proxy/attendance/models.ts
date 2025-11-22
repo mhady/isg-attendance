@@ -28,6 +28,7 @@ export interface EmployeeDto extends AuditedEntityDto<string> {
 export interface CreateEmployeeDto {
   fullName: string;
   email: string;
+  createUserAccount: boolean;
   password?: string;
   phoneNumber?: string;
   employeeCode?: string;

@@ -14,6 +14,8 @@ namespace ISG.attendance.DTOs.Employees
         [StringLength(256)]
         public string Email { get; set; }
 
+        public bool CreateUserAccount { get; set; } = false;
+
         [StringLength(256)]
         public string Password { get; set; }
 

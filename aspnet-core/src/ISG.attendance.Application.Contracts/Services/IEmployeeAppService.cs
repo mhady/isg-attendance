@@ -24,5 +24,11 @@ namespace ISG.attendance.Services
         Task<EmployeeDto> GetByUserIdAsync(Guid userId);
 
         Task<List<EmployeeDto>> GetEmployeesByLocationAsync(Guid locationId);
+
+        Task<List<EmployeeLocationDto>> GetEmployeeLocationsAsync(Guid employeeId);
+
+        Task AssignLocationsAsync(Guid employeeId, AssignLocationsDto input);
+
+        Task RemoveLocationAsync(Guid employeeId, Guid locationId);
     }
 }

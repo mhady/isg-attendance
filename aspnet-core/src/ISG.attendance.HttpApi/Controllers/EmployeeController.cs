@@ -69,5 +69,34 @@ namespace ISG.attendance.Controllers
         {
             return _employeeAppService.GetEmployeesByLocationAsync(locationId);
         }
+
+        [HttpGet("{employeeId}/locations")]
+        public virtual Task<List<EmployeeLocationDto>> GetEmployeeLocationsAsync(Guid employeeId)
+        {
+            return _employeeAppService.GetEmployeeLocationsAsync(employeeId);
+        }
+
+        [HttpPost("{employeeId}/assign-locations")]
+        public virtual Task AssignLocationsAsync(Guid employeeId, AssignLocationsDto input)
+        {
+            return _employeeAppService.AssignLocationsAsync(employeeId, input);
+        }
+
+        [HttpDelete("{employeeId}/locations/{locationId}")]
+        public virtual Task RemoveLocationAsync(Guid employeeId, Guid locationId)
+        {
+            return _employeeAppService.RemoveLocationAsync(employeeId, locationId);
+        }
+
+        [HttpGet("me")]
+        public virtual async Task<EmployeeDto> GetMyProfileAsync()
+        {
+            if (CurrentUser.Id == null)
+            {
+                throw new UserFriendlyException("User not authenticated");
+            }
+
+            return await _employeeAppService.GetByUserIdAsync(CurrentUser.Id.Value);
+        }
     }
 }

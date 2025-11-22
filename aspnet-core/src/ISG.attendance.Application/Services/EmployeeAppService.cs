@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -22,17 +23,20 @@ namespace ISG.attendance.Services
     {
         private readonly IRepository<Employee, Guid> _employeeRepository;
         private readonly IRepository<Location, Guid> _locationRepository;
+        private readonly IRepository<EmployeeLocation, Guid> _employeeLocationRepository;
         private readonly IIdentityUserRepository _userRepository;
         private readonly IdentityUserManager _userManager;
 
         public EmployeeAppService(
             IRepository<Employee, Guid> employeeRepository,
             IRepository<Location, Guid> locationRepository,
+            IRepository<EmployeeLocation, Guid> employeeLocationRepository,
             IIdentityUserRepository userRepository,
             IdentityUserManager userManager)
         {
             _employeeRepository = employeeRepository;
             _locationRepository = locationRepository;
+            _employeeLocationRepository = employeeLocationRepository;
             _userRepository = userRepository;
             _userManager = userManager;
         }
@@ -44,6 +48,7 @@ namespace ISG.attendance.Services
             var queryable = await _employeeRepository.GetQueryableAsync();
             queryable = queryable
                 .Include(e => e.Location)
+                .Include(e => e.EmployeeLocations)
                 .OrderByDescending(e => e.CreationTime);
 
             var totalCount = await AsyncExecuter.CountAsync(queryable);
@@ -65,7 +70,8 @@ namespace ISG.attendance.Services
                 LocationId = e.LocationId,
                 LocationName = e.Location?.Name,
                 IsActive = e.IsActive,
-                CreationTime = e.CreationTime
+                CreationTime = e.CreationTime,
+                LocationIds = e.EmployeeLocations?.Select(el => el.LocationId).ToList() ?? new List<Guid>()
             }).ToList();
 
             return new PagedResultDto<EmployeeDto>(totalCount, employeeDtos);
@@ -75,41 +81,61 @@ namespace ISG.attendance.Services
         {
             await CheckPolicyAsync(attendancePermissions.Employees.Default);
 
-            var employee = await _employeeRepository.GetAsync(id, includeDetails: true);
+            var queryable = await _employeeRepository.GetQueryableAsync();
+            var employee = await AsyncExecuter.FirstOrDefaultAsync(
+                queryable
+                    .Include(e => e.Location)
+                    .Include(e => e.EmployeeLocations)
+                    .Where(e => e.Id == id)
+            );
 
-            return ObjectMapper.Map<Employee, EmployeeDto>(employee);
+            if (employee == null)
+            {
+                throw new EntityNotFoundException(typeof(Employee), id);
+            }
+
+            var dto = ObjectMapper.Map<Employee, EmployeeDto>(employee);
+            dto.LocationIds = employee.EmployeeLocations?.Select(el => el.LocationId).ToList() ?? new List<Guid>();
+
+            return dto;
         }
 
         public async Task<EmployeeDto> CreateAsync(CreateEmployeeDto input)
         {
             await CheckPolicyAsync(attendancePermissions.Employees.Create);
 
-            // Create Identity User
-            var user = new IdentityUser(
-                GuidGenerator.Create(),
-                input.Email,
-                input.Email,
-                CurrentTenant.Id
-            );
+            Guid? userId = null;
 
-            await _userManager.SetEmailAsync(user, input.Email);
-            var result = await _userManager.CreateAsync(user, input.Password);
-
-            if (!result.Succeeded)
+            // Create Identity User only if password is provided
+            if (!string.IsNullOrWhiteSpace(input.Password))
             {
-                throw new UserFriendlyException(result.Errors.First().Description);
-            }
+                var user = new IdentityUser(
+                    GuidGenerator.Create(),
+                    input.Email,
+                    input.Email,
+                    CurrentTenant.Id
+                );
 
-            // Assign Employee role
-            await _userManager.AddToRoleAsync(user, "Employee");
+                await _userManager.SetEmailAsync(user, input.Email);
+                var result = await _userManager.CreateAsync(user, input.Password);
+
+                if (!result.Succeeded)
+                {
+                    throw new UserFriendlyException(result.Errors.First().Description);
+                }
+
+                // Assign Employee role
+                await _userManager.AddToRoleAsync(user, "Employee");
+                userId = user.Id;
+            }
 
             // Create Employee entity
             var employee = new Employee(
                 GuidGenerator.Create(),
-                user.Id,
                 input.FullName,
                 input.Email,
                 input.EmployeeCode,
+                userId,
                 input.LocationId,
                 input.PhoneNumber,
                 CurrentTenant.Id
@@ -132,10 +158,13 @@ namespace ISG.attendance.Services
             employee.AssignToLocation(input.LocationId);
             employee.SetActive(input.IsActive);
 
-            // Update user email
-            var user = await _userRepository.GetAsync(employee.UserId);
-            await _userManager.SetEmailAsync(user, input.Email);
-            await _userManager.SetUserNameAsync(user, input.Email);
+            // Update user email if user account exists
+            if (employee.UserId.HasValue)
+            {
+                var user = await _userRepository.GetAsync(employee.UserId.Value);
+                await _userManager.SetEmailAsync(user, input.Email);
+                await _userManager.SetUserNameAsync(user, input.Email);
+            }
 
             await _employeeRepository.UpdateAsync(employee);
 
@@ -148,11 +177,14 @@ namespace ISG.attendance.Services
 
             var employee = await _employeeRepository.GetAsync(id);
 
-            // Delete the associated user
-            var user = await _userRepository.FindAsync(employee.UserId);
-            if (user != null)
+            // Delete the associated user if exists
+            if (employee.UserId.HasValue)
             {
-                await _userManager.DeleteAsync(user);
+                var user = await _userRepository.FindAsync(employee.UserId.Value);
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
             }
 
             await _employeeRepository.DeleteAsync(id);
@@ -239,6 +271,68 @@ namespace ISG.attendance.Services
             );
 
             return ObjectMapper.Map<List<Employee>, List<EmployeeDto>>(employees);
+        }
+
+        public async Task<List<EmployeeLocationDto>> GetEmployeeLocationsAsync(Guid employeeId)
+        {
+            await CheckPolicyAsync(attendancePermissions.Employees.Default);
+
+            var queryable = await _employeeLocationRepository.GetQueryableAsync();
+            var employeeLocations = await AsyncExecuter.ToListAsync(
+                queryable
+                    .Include(el => el.Location)
+                    .Where(el => el.EmployeeId == employeeId)
+                    .OrderBy(el => el.Location.Name)
+            );
+
+            return employeeLocations.Select(el => new EmployeeLocationDto
+            {
+                Id = el.Id,
+                EmployeeId = el.EmployeeId,
+                LocationId = el.LocationId,
+                LocationName = el.Location?.Name,
+                CreationTime = el.CreationTime
+            }).ToList();
+        }
+
+        public async Task AssignLocationsAsync(Guid employeeId, AssignLocationsDto input)
+        {
+            await CheckPolicyAsync(attendancePermissions.Employees.Edit);
+
+            var employee = await _employeeRepository.GetAsync(employeeId);
+
+            // Remove existing location assignments
+            var existingLocations = await _employeeLocationRepository.GetListAsync(el => el.EmployeeId == employeeId);
+            foreach (var location in existingLocations)
+            {
+                await _employeeLocationRepository.DeleteAsync(location);
+            }
+
+            // Add new location assignments
+            foreach (var locationId in input.LocationIds)
+            {
+                var employeeLocation = new EmployeeLocation(
+                    GuidGenerator.Create(),
+                    employeeId,
+                    locationId,
+                    CurrentTenant.Id
+                );
+
+                await _employeeLocationRepository.InsertAsync(employeeLocation);
+            }
+        }
+
+        public async Task RemoveLocationAsync(Guid employeeId, Guid locationId)
+        {
+            await CheckPolicyAsync(attendancePermissions.Employees.Edit);
+
+            var employeeLocation = await _employeeLocationRepository.FirstOrDefaultAsync(
+                el => el.EmployeeId == employeeId && el.LocationId == locationId);
+
+            if (employeeLocation != null)
+            {
+                await _employeeLocationRepository.DeleteAsync(employeeLocation);
+            }
         }
 
         private async Task CheckPolicyAsync(string policyName)

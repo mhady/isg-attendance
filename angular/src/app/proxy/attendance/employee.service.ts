@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RestService } from '@abp/ng.core';
 import type { PagedAndSortedResultRequestDto, PagedResultDto } from '@abp/ng.core';
-import type { EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto, ImportEmployeeDto } from './models';
+import type { EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto, ImportEmployeeDto, EmployeeLocationDto, AssignLocationsDto } from './models';
 
 @Injectable({
   providedIn: 'root',
@@ -61,6 +61,35 @@ export class EmployeeService {
     this.restService.request<any, EmployeeDto[]>({
       method: 'GET',
       url: `/api/attendance/employees/by-location/${locationId}`,
+    },
+    { apiName: this.apiName });
+
+  getEmployeeLocations = (employeeId: string) =>
+    this.restService.request<any, EmployeeLocationDto[]>({
+      method: 'GET',
+      url: `/api/attendance/employees/${employeeId}/locations`,
+    },
+    { apiName: this.apiName });
+
+  assignLocations = (employeeId: string, input: AssignLocationsDto) =>
+    this.restService.request<any, void>({
+      method: 'POST',
+      url: `/api/attendance/employees/${employeeId}/assign-locations`,
+      body: input,
+    },
+    { apiName: this.apiName });
+
+  removeLocation = (employeeId: string, locationId: string) =>
+    this.restService.request<any, void>({
+      method: 'DELETE',
+      url: `/api/attendance/employees/${employeeId}/locations/${locationId}`,
+    },
+    { apiName: this.apiName });
+
+  getMyProfile = () =>
+    this.restService.request<any, EmployeeDto>({
+      method: 'GET',
+      url: '/api/attendance/employees/me',
     },
     { apiName: this.apiName });
 }

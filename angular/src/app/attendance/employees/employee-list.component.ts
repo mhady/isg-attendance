@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EmployeeService } from '../../proxy/attendance/employee.service';
 import { LocationService } from '../../proxy/attendance/location.service';
-import { EmployeeDto, LocationDto, CreateEmployeeDto, UpdateEmployeeDto } from '../../proxy/attendance/models';
+import { EmployeeDto, LocationDto, CreateEmployeeDto, UpdateEmployeeDto, AssignLocationsDto, EmployeeLocationDto } from '../../proxy/attendance/models';
 import { PagedAndSortedResultRequestDto } from '@abp/ng.core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, Confirmation } from '@abp/ng.theme.shared';
@@ -22,8 +22,12 @@ export class EmployeeListComponent implements OnInit {
   totalCount = 0;
   loading = false;
   isModalOpen = false;
+  isLocationModalOpen = false;
   selectedEmployee: EmployeeDto | null = null;
+  selectedEmployeeLocations: EmployeeLocationDto[] = [];
+  selectedLocationIds: string[] = [];
   currentPage = 1;
+  createUserAccount = true;
 
   employeeForm: FormGroup;
 
@@ -84,10 +88,21 @@ export class EmployeeListComponent implements OnInit {
 
   createEmployee() {
     this.selectedEmployee = null;
+    this.createUserAccount = true;
     this.employeeForm.reset({ isActive: true });
-    this.employeeForm.get('password')?.setValidators([Validators.required, Validators.maxLength(256)]);
+    this.employeeForm.get('password')?.clearValidators();
     this.employeeForm.get('password')?.updateValueAndValidity();
     this.isModalOpen = true;
+  }
+
+  onCreateUserAccountChange() {
+    if (this.createUserAccount) {
+      this.employeeForm.get('password')?.setValidators([Validators.required, Validators.maxLength(256)]);
+    } else {
+      this.employeeForm.get('password')?.clearValidators();
+      this.employeeForm.get('password')?.setValue(null);
+    }
+    this.employeeForm.get('password')?.updateValueAndValidity();
   }
 
   editEmployee(employee: EmployeeDto) {
@@ -144,5 +159,61 @@ export class EmployeeListComponent implements OnInit {
         });
       }
     });
+  }
+
+  manageLocations(employee: EmployeeDto) {
+    this.selectedEmployee = employee;
+    this.selectedLocationIds = [...(employee.locationIds || [])];
+    this.loadEmployeeLocations(employee.id);
+    this.isLocationModalOpen = true;
+  }
+
+  loadEmployeeLocations(employeeId: string) {
+    this.employeeService.getEmployeeLocations(employeeId).subscribe({
+      next: (locations) => {
+        this.selectedEmployeeLocations = locations;
+      }
+    });
+  }
+
+  toggleLocation(locationId: string) {
+    const index = this.selectedLocationIds.indexOf(locationId);
+    if (index > -1) {
+      this.selectedLocationIds.splice(index, 1);
+    } else {
+      this.selectedLocationIds.push(locationId);
+    }
+  }
+
+  isLocationSelected(locationId: string): boolean {
+    return this.selectedLocationIds.includes(locationId);
+  }
+
+  saveLocations() {
+    if (!this.selectedEmployee) {
+      return;
+    }
+
+    const assignDto: AssignLocationsDto = {
+      locationIds: this.selectedLocationIds
+    };
+
+    this.employeeService.assignLocations(this.selectedEmployee.id, assignDto).subscribe(() => {
+      this.isLocationModalOpen = false;
+      this.loadEmployees();
+    });
+  }
+
+  getLocationNames(locationIds: string[]): string {
+    if (!locationIds || locationIds.length === 0) {
+      return '-';
+    }
+    return locationIds
+      .map(id => {
+        const location = this.locations.find(l => l.id === id);
+        return location ? location.name : '';
+      })
+      .filter(name => name)
+      .join(', ');
   }
 }

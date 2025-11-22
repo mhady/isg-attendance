@@ -22,7 +22,8 @@
             <th>{{ '::FullName' | abpLocalization }}</th>
             <th>{{ '::Email' | abpLocalization }}</th>
             <th>{{ '::PhoneNumber' | abpLocalization }}</th>
-            <th>{{ '::Location' | abpLocalization }}</th>
+            <th>{{ '::PrimaryLocation' | abpLocalization }}</th>
+            <th>{{ '::AssignedLocations' | abpLocalization }}</th>
             <th>{{ '::Status' | abpLocalization }}</th>
             <th>{{ '::Actions' | abpLocalization }}</th>
           </tr>
@@ -33,7 +34,13 @@
             <td>{{ employee.fullName }}</td>
             <td>{{ employee.email }}</td>
             <td>{{ employee.phoneNumber }}</td>
-            <td>{{ employee.locationName }}</td>
+            <td>{{ employee.locationName || '-' }}</td>
+            <td>
+              <span class="badge bg-info text-white me-1" *ngFor="let locationId of employee.locationIds">
+                {{ locations.find(l => l.id === locationId)?.name }}
+              </span>
+              <span *ngIf="!employee.locationIds || employee.locationIds.length === 0">-</span>
+            </td>
             <td>
               <span class="badge" [class.bg-success]="employee.isActive" [class.bg-danger]="!employee.isActive">
                 {{ employee.isActive ? ('::Active' | abpLocalization) : ('::Inactive' | abpLocalization) }}
@@ -43,13 +50,16 @@
               <button class="btn btn-sm btn-primary me-1" (click)="editEmployee(employee)">
                 <i class="fa fa-edit"></i>
               </button>
+              <button class="btn btn-sm btn-info me-1" (click)="manageLocations(employee)" title="Manage Locations">
+                <i class="fa fa-map-marker"></i>
+              </button>
               <button class="btn btn-sm btn-danger" (click)="deleteEmployee(employee.id)">
                 <i class="fa fa-trash"></i>
               </button>
             </td>
           </tr>
           <tr *ngIf="employees.length === 0">
-            <td colspan="7" class="text-center">
+            <td colspan="8" class="text-center">
               {{ loading ? '::Loading' : '::NoRecordsFound' | abpLocalization }}
             </td>
           </tr>
@@ -85,7 +95,13 @@
         <input type="email" id="email" class="form-control" formControlName="email" />
       </div>
 
-      <div class="mb-3" *ngIf="!selectedEmployee">
+      <div class="mb-3 form-check" *ngIf="!selectedEmployee">
+        <input type="checkbox" id="createUserAccount" class="form-check-input" [(ngModel)]="createUserAccount" [ngModelOptions]="{standalone: true}" (change)="onCreateUserAccountChange()" />
+        <label for="createUserAccount" class="form-check-label">{{ '::CreateUserAccount' | abpLocalization }}</label>
+        <small class="form-text text-muted d-block">{{ '::CreateUserAccountHint' | abpLocalization }}</small>
+      </div>
+
+      <div class="mb-3" *ngIf="!selectedEmployee && createUserAccount">
         <label for="password" class="form-label">{{ '::Password' | abpLocalization }} *</label>
         <input type="password" id="password" class="form-control" formControlName="password" />
       </div>
@@ -122,6 +138,57 @@
       {{ '::Cancel' | abpLocalization }}
     </button>
     <button type="button" class="btn btn-primary" (click)="save()" [disabled]="employeeForm.invalid">
+      <i class="fa fa-check me-1"></i>
+      {{ '::Save' | abpLocalization }}
+    </button>
+  </ng-template>
+</abp-modal>
+
+<abp-modal [(visible)]="isLocationModalOpen" [busy]="loading">
+  <ng-template #abpHeader>
+    <h3>{{ '::ManageLocations' | abpLocalization }} - {{ selectedEmployee?.fullName }}</h3>
+  </ng-template>
+
+  <ng-template #abpBody>
+    <div class="alert alert-info">
+      <i class="fa fa-info-circle me-2"></i>
+      {{ '::SelectLocationsHint' | abpLocalization }}
+    </div>
+
+    <div class="list-group">
+      <label class="list-group-item" *ngFor="let location of locations">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            [checked]="isLocationSelected(location.id)"
+            (change)="toggleLocation(location.id)"
+          />
+          <label class="form-check-label">
+            {{ location.name }}
+            <small class="text-muted" *ngIf="location.description">
+              - {{ location.description }}
+            </small>
+          </label>
+        </div>
+      </label>
+    </div>
+
+    <div class="mt-3" *ngIf="selectedLocationIds.length > 0">
+      <strong>{{ '::SelectedLocations' | abpLocalization }}:</strong>
+      <div class="mt-2">
+        <span class="badge bg-primary me-1" *ngFor="let locationId of selectedLocationIds">
+          {{ locations.find(l => l.id === locationId)?.name }}
+        </span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #abpFooter>
+    <button type="button" class="btn btn-secondary" (click)="isLocationModalOpen = false">
+      {{ '::Cancel' | abpLocalization }}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="saveLocations()">
       <i class="fa fa-check me-1"></i>
       {{ '::Save' | abpLocalization }}
     </button>

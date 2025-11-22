@@ -14,7 +14,7 @@ export interface CreateUpdateLocationDto {
 }
 
 export interface EmployeeDto extends AuditedEntityDto<string> {
-  userId: string;
+  userId?: string;
   fullName: string;
   email: string;
   phoneNumber?: string;
@@ -22,12 +22,13 @@ export interface EmployeeDto extends AuditedEntityDto<string> {
   locationId?: string;
   locationName?: string;
   isActive: boolean;
+  locationIds: string[];
 }
 
 export interface CreateEmployeeDto {
   fullName: string;
   email: string;
-  password: string;
+  password?: string;
   phoneNumber?: string;
   employeeCode?: string;
   locationId?: string;
@@ -121,4 +122,16 @@ export interface GetMonthlyAttendanceInput {
   employeeName?: string;
   month: number;
   year: number;
+}
+
+export interface EmployeeLocationDto {
+  id: string;
+  employeeId: string;
+  locationId: string;
+  locationName?: string;
+  creationTime: string;
+}
+
+export interface AssignLocationsDto {
+  locationIds: string[];
 }
